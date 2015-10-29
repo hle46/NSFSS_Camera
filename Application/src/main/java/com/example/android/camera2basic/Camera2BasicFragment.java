@@ -50,6 +50,7 @@ import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentCompat;
 import android.util.Log;
+import android.util.Range;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -229,9 +230,16 @@ public class Camera2BasicFragment extends Fragment
     private ImageReader mImageReader;
 
     /**
-     * This is the output file for our picture.
+     * Number of images in a burst
      */
-    private File mFile;
+    private final int numBurstImages = 10;
+
+    /**
+     * Current image
+     */
+    private int imageNum = 0;
+    private int savedImageNum = 0;
+
 
 
     /**
@@ -255,7 +263,12 @@ public class Camera2BasicFragment extends Fragment
             dngCreator.close();
             image.close(); */
             //getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(mFile)));
-            mBackgroundHandler.post(new ImageSaver(reader.acquireLatestImage(), mFile, mCameraCharacteristics, mCaptureResult, getActivity()));
+            ++savedImageNum;
+            File mFile = new File(getActivity().getExternalFilesDir(null), "pic" + savedImageNum + ".dng");
+            mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), mFile, mCameraCharacteristics, mCaptureResult, getActivity()));
+            if (savedImageNum == numBurstImages) {
+                savedImageNum = 0;
+            }
         }
 
     };
@@ -418,7 +431,6 @@ public class Camera2BasicFragment extends Fragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mFile = new File(getActivity().getExternalFilesDir(null), "pic1.dng");
     }
 
     @Override
@@ -482,13 +494,15 @@ public class Camera2BasicFragment extends Fragment
                 if (map == null) {
                     continue;
                 }
+                Range<Long> range = characteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
+                Log.d(TAG, "Exposure time: " + range.getLower() + ", " + range.getUpper());
 
                 // For still image captures, we use the largest available size.
                 Size largest = Collections.max(
                         Arrays.asList(map.getOutputSizes(ImageFormat.RAW_SENSOR)),
                         new CompareSizesByArea());
                 mImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(),
-                        ImageFormat.RAW_SENSOR, /*maxImages*/2);
+                        ImageFormat.RAW_SENSOR, /*maxImages*/numBurstImages);
                 mImageReader.setOnImageAvailableListener(
                         mOnImageAvailableListener, mBackgroundHandler);
 
@@ -748,8 +762,11 @@ public class Camera2BasicFragment extends Fragment
             // Use the same AE and AF modes as the preview.
             captureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
                     CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-            captureBuilder.set(CaptureRequest.CONTROL_AE_MODE,
-                    CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+            captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
+            captureBuilder.set(CaptureRequest.CONTROL_AE_ANTIBANDING_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
+            captureBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, Long.valueOf(10000000));
+            //captureBuilder.set(CaptureRequest.CONTROL_AE_MODE,
+            //        CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
 
             // Orientation
             //int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
@@ -763,14 +780,23 @@ public class Camera2BasicFragment extends Fragment
                                                @NonNull CaptureRequest request,
                                                @NonNull TotalCaptureResult result) {
                     mCaptureResult = result;
-                    showToast("Saved: " + mFile);
-                    Log.d(TAG, mFile.toString());
-                    unlockFocus();
+                    Log.d(TAG, "Real exposure time: " + mCaptureResult.get(CaptureResult.SENSOR_EXPOSURE_TIME));
+                    //showToast("Saved: " + mFile);
+                    //Log.d(TAG, mFile.toString());
+                    ++imageNum;
+                    if (imageNum >= numBurstImages) {
+                        imageNum = 0;
+                        unlockFocus();
+                    }
                 }
             };
 
             mCaptureSession.stopRepeating();
-            mCaptureSession.capture(captureBuilder.build(), CaptureCallback, null);
+            List<CaptureRequest> captureRequests = new ArrayList<>();
+            for (int i = 0; i < numBurstImages; ++i) {
+                captureRequests.add(captureBuilder.build());
+            }
+            mCaptureSession.captureBurst(captureRequests, CaptureCallback, null);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }

@@ -36,10 +36,29 @@
             android:id="@+id/picture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="left|center_vertical"
             android:text="@string/picture" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Exposure Time(1000ns):"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_gravity="center_horizontal|top"
+            android:background="#ffffff" />
+
+        <EditText
+            android:id="@+id/exposure_time"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text"
+            android:maxLength="32"
+            android:selectAllOnFocus="true"
+            android:layout_gravity="right|center_vertical"
+            android:background="#ffffff" />
 
     </FrameLayout>
 
 </RelativeLayout>
-<!-- From: file:/C:/Users/meowle/Research/android-Camera2Basic/Application/src/main/res/layout/fragment_camera2_basic.xml -->
+<!-- From: file:/C:/Users/meowchen/Desktop/NSFSS_Camera/Application/src/main/res/layout/fragment_camera2_basic.xml -->
