@@ -232,7 +232,7 @@ public class Camera2BasicFragment extends Fragment
     /**
      * Number of images in a burst
      */
-    private final int numBurstImages = 10;
+    private final int numBurstImages = 6;
 
     /**
      * Current image
@@ -263,6 +263,7 @@ public class Camera2BasicFragment extends Fragment
             dngCreator.close();
             image.close(); */
             //getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(mFile)));
+            Log.d(TAG, "On Image Available");
             ++savedImageNum;
             File mFile = new File(getActivity().getExternalFilesDir(null), "pic" + savedImageNum + ".dng");
             mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), mFile, mCameraCharacteristics, mCaptureResult, getActivity()));
@@ -496,6 +497,11 @@ public class Camera2BasicFragment extends Fragment
                 }
                 Range<Long> range = characteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
                 Log.d(TAG, "Exposure time: " + range.getLower() + ", " + range.getUpper());
+                Log.d(TAG, "Support hardware level: " + characteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL));
+                for (int i: characteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES)) {
+                    Log.d(TAG, " " + i);
+                }
+                Log.d(TAG, "Len shading applied: " + characteristics.get(CameraCharacteristics.SENSOR_INFO_LENS_SHADING_APPLIED));
 
                 // For still image captures, we use the largest available size.
                 Size largest = Collections.max(
@@ -762,11 +768,11 @@ public class Camera2BasicFragment extends Fragment
             // Use the same AE and AF modes as the preview.
             captureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
                     CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-            captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
-            captureBuilder.set(CaptureRequest.CONTROL_AE_ANTIBANDING_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
-            captureBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, Long.valueOf(10000000));
-            //captureBuilder.set(CaptureRequest.CONTROL_AE_MODE,
-            //        CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+            //captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
+            //captureBuilder.set(CaptureRequest.CONTROL_AE_ANTIBANDING_MODE, CaptureRequest.CONTROL_AE_ANTIBANDING_MODE_OFF);
+            //captureBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, Long.valueOf(600000000));
+            captureBuilder.set(CaptureRequest.CONTROL_AE_MODE,
+                    CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
 
             // Orientation
             //int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
@@ -780,9 +786,7 @@ public class Camera2BasicFragment extends Fragment
                                                @NonNull CaptureRequest request,
                                                @NonNull TotalCaptureResult result) {
                     mCaptureResult = result;
-                    Log.d(TAG, "Real exposure time: " + mCaptureResult.get(CaptureResult.SENSOR_EXPOSURE_TIME));
-                    //showToast("Saved: " + mFile);
-                    //Log.d(TAG, mFile.toString());
+                    Log.d(TAG, "onCaptureCompleted" + ", imageNum: " + imageNum + " Real exposure time: " + mCaptureResult.get(CaptureResult.SENSOR_EXPOSURE_TIME));
                     ++imageNum;
                     if (imageNum >= numBurstImages) {
                         imageNum = 0;
@@ -874,8 +878,12 @@ public class Camera2BasicFragment extends Fragment
 
         @Override
         public void run() {
+            //if (mCaptureResult == null) {
+            //    Log.e(TAG, "Image Capturing failed");
+            //    return;
+            //}
             DngCreator dngCreator = new DngCreator(mCameraCharacteristics, mCaptureResult);
-            Log.d(TAG, mImage.getHeight() + ", " + mImage.getWidth());
+            Log.d(TAG, "Background thread run to save image");
             try {
                 FileOutputStream output = new FileOutputStream(mFile);
                 dngCreator.writeImage(output, mImage);

@@ -2,53 +2,53 @@
 <items version="2" >
 
     <item
-        jar="C:\Users\meowchen\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\23.0.0\support-annotations-23.0.0.jar"
-        jumboMode="false"
-        revision="23.0.1"
-        sha1="990e7f98a7bad86a40b1f0bcfeb039023afd0839">
-        <dex dex="C:\Users\meowchen\Desktop\NSFSS_Camera\Application\build\intermediates\pre-dexed\debug\support-annotations-23.0.0-adb5d7ebbae1ce0da9b49518fe443cb7b868bc89.jar" />
-    </item>
-    <item
-        jar="C:\Users\meowchen\Desktop\NSFSS_Camera\Application\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.0\jars\libs\internal_impl-23.0.0.jar"
-        jumboMode="false"
-        revision="23.0.1"
-        sha1="8bd336eeae661e8311330284897ee07f8ebaa297">
-        <dex dex="C:\Users\meowchen\Desktop\NSFSS_Camera\Application\build\intermediates\pre-dexed\debug\internal_impl-23.0.0-45d9456ec3fa107f3c189499b9c37bfbcedb4264.jar" />
-    </item>
-    <item
-        jar="C:\Users\meowchen\Desktop\NSFSS_Camera\Application\build\intermediates\exploded-aar\com.android.support\support-v13\23.0.0\jars\classes.jar"
+        jar="C:\Users\meowle\Research\NSFSS_Camera\Application\build\intermediates\exploded-aar\com.android.support\support-v13\23.0.0\jars\classes.jar"
         jumboMode="false"
         revision="23.0.1"
         sha1="bb0ac3f3ee2d71854501cc28e52cc84a20209b41">
-        <dex dex="C:\Users\meowchen\Desktop\NSFSS_Camera\Application\build\intermediates\pre-dexed\debug\classes-e84338bc95277942f48459af034fc57d3ee0348e.jar" />
+        <dex dex="C:\Users\meowle\Research\NSFSS_Camera\Application\build\intermediates\pre-dexed\debug\classes-6d2c22b04a504932046c731102d200c0722aee4b.jar" />
     </item>
     <item
-        jar="C:\Users\meowchen\Desktop\NSFSS_Camera\Application\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.0\jars\classes.jar"
-        jumboMode="false"
-        revision="23.0.1"
-        sha1="8413c27b45b7fe61dca4a98159f65e2cee215f5a">
-        <dex dex="C:\Users\meowchen\Desktop\NSFSS_Camera\Application\build\intermediates\pre-dexed\debug\classes-e7b8b485bd99af241996e88361738c1d292789c2.jar" />
-    </item>
-    <item
-        jar="C:\Users\meowchen\Desktop\NSFSS_Camera\Application\build\intermediates\exploded-aar\com.android.support\cardview-v7\23.0.0\jars\classes.jar"
-        jumboMode="false"
-        revision="23.0.1"
-        sha1="1ccbc26be2c465c622a48310e8092241b01abe80">
-        <dex dex="C:\Users\meowchen\Desktop\NSFSS_Camera\Application\build\intermediates\pre-dexed\debug\classes-b55b7c04af72de6491a58ec9512f5f89d16bd06a.jar" />
-    </item>
-    <item
-        jar="C:\Users\meowchen\Desktop\NSFSS_Camera\Application\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.0.0\jars\classes.jar"
-        jumboMode="false"
-        revision="23.0.1"
-        sha1="4fcf0b1879f8caf497c073e1432d398e9e2988c1">
-        <dex dex="C:\Users\meowchen\Desktop\NSFSS_Camera\Application\build\intermediates\pre-dexed\debug\classes-e7f6e9bc8b59d14eaae690ed5d602ab0e228d481.jar" />
-    </item>
-    <item
-        jar="C:\Users\meowchen\Desktop\NSFSS_Camera\Application\build\intermediates\exploded-aar\com.android.support\support-v13\23.0.0\jars\libs\internal_impl-23.0.0.jar"
+        jar="C:\Users\meowle\Research\NSFSS_Camera\Application\build\intermediates\exploded-aar\com.android.support\support-v13\23.0.0\jars\libs\internal_impl-23.0.0.jar"
         jumboMode="false"
         revision="23.0.1"
         sha1="5d4bccb885c8a89d066ecb6c4addb553a99a79a2">
-        <dex dex="C:\Users\meowchen\Desktop\NSFSS_Camera\Application\build\intermediates\pre-dexed\debug\internal_impl-23.0.0-6da000b6e02efa706dec9f01cafc5312d21a0350.jar" />
+        <dex dex="C:\Users\meowle\Research\NSFSS_Camera\Application\build\intermediates\pre-dexed\debug\internal_impl-23.0.0-b7e6c9421dea80a050e4d23d077415bacfb9df5a.jar" />
+    </item>
+    <item
+        jar="C:\Users\meowle\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\23.0.0\support-annotations-23.0.0.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="990e7f98a7bad86a40b1f0bcfeb039023afd0839">
+        <dex dex="C:\Users\meowle\Research\NSFSS_Camera\Application\build\intermediates\pre-dexed\debug\support-annotations-23.0.0-cfadbd23fedd0adcfd5b257b1ea275250574d61a.jar" />
+    </item>
+    <item
+        jar="C:\Users\meowle\Research\NSFSS_Camera\Application\build\intermediates\exploded-aar\com.android.support\cardview-v7\23.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="1ccbc26be2c465c622a48310e8092241b01abe80">
+        <dex dex="C:\Users\meowle\Research\NSFSS_Camera\Application\build\intermediates\pre-dexed\debug\classes-72865d3e105b103cbfe8687bb4a69d2346fa7a84.jar" />
+    </item>
+    <item
+        jar="C:\Users\meowle\Research\NSFSS_Camera\Application\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.0\jars\libs\internal_impl-23.0.0.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="8bd336eeae661e8311330284897ee07f8ebaa297">
+        <dex dex="C:\Users\meowle\Research\NSFSS_Camera\Application\build\intermediates\pre-dexed\debug\internal_impl-23.0.0-5afb7d9b4325e92a4adff10a02c3999c063cc16e.jar" />
+    </item>
+    <item
+        jar="C:\Users\meowle\Research\NSFSS_Camera\Application\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="8413c27b45b7fe61dca4a98159f65e2cee215f5a">
+        <dex dex="C:\Users\meowle\Research\NSFSS_Camera\Application\build\intermediates\pre-dexed\debug\classes-87bfaf80063eb2cd96413b61a932cd7845ab6ea7.jar" />
+    </item>
+    <item
+        jar="C:\Users\meowle\Research\NSFSS_Camera\Application\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="4fcf0b1879f8caf497c073e1432d398e9e2988c1">
+        <dex dex="C:\Users\meowle\Research\NSFSS_Camera\Application\build\intermediates\pre-dexed\debug\classes-7b054779804d8c1fef3791ddc3ea80d3123d271e.jar" />
     </item>
 
 </items>
