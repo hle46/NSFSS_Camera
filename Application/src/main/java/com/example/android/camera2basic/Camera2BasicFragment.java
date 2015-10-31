@@ -36,6 +36,7 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
+import android.hardware.camera2.CaptureFailure;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.DngCreator;
@@ -58,11 +59,14 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -241,6 +245,9 @@ public class Camera2BasicFragment extends Fragment
     private int savedImageNum = 0;
 
 
+    private SeekBar mSeekBar;
+    private long mLowerExposureTime;
+    private long mUpperExposureTime;
 
     /**
      * This a callback object for the {@link ImageReader}. "onImageAvailable" will be called when a
@@ -251,6 +258,10 @@ public class Camera2BasicFragment extends Fragment
 
         @Override
         public void onImageAvailable(ImageReader reader) {
+
+            if (mCaptureResult == null) {
+                return;
+            }
             /*
             Image image = reader.acquireLatestImage();
             DngCreator dngCreator = new DngCreator(mCameraCharacteristics, mCaptureResult);
@@ -427,6 +438,30 @@ public class Camera2BasicFragment extends Fragment
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         view.findViewById(R.id.picture).setOnClickListener(this);
         mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
+        mSeekBar = (SeekBar) view.findViewById(R.id.exposureTimeSeekBar);
+        final TextView mTextView = (TextView) view.findViewById(R.id.exposureTimeTextView);
+        mSeekBar.setOnSeekBarChangeListener(
+                new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        double exposureTime = progress * (mUpperExposureTime - mLowerExposureTime) / 100.0 + mLowerExposureTime;
+
+                        mTextView.setText("Exposure Time: " + ((long) exposureTime) + " ns");
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+
+                    }
+                }
+        );
+
+
     }
 
     @Override
@@ -496,17 +531,22 @@ public class Camera2BasicFragment extends Fragment
                     continue;
                 }
                 Range<Long> range = characteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
+                mLowerExposureTime = range.getLower();
+                mUpperExposureTime = range.getUpper();
+
                 Log.d(TAG, "Exposure time: " + range.getLower() + ", " + range.getUpper());
                 Log.d(TAG, "Support hardware level: " + characteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL));
+
                 for (int i: characteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES)) {
                     Log.d(TAG, " " + i);
                 }
-                Log.d(TAG, "Len shading applied: " + characteristics.get(CameraCharacteristics.SENSOR_INFO_LENS_SHADING_APPLIED));
 
                 // For still image captures, we use the largest available size.
                 Size largest = Collections.max(
                         Arrays.asList(map.getOutputSizes(ImageFormat.RAW_SENSOR)),
                         new CompareSizesByArea());
+
+                Log.d(TAG, "Min frame: " + map.getOutputMinFrameDuration(ImageFormat.RAW_SENSOR, largest));
                 mImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(),
                         ImageFormat.RAW_SENSOR, /*maxImages*/numBurstImages);
                 mImageReader.setOnImageAvailableListener(
@@ -768,11 +808,16 @@ public class Camera2BasicFragment extends Fragment
             // Use the same AE and AF modes as the preview.
             captureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
                     CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-            //captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
-            //captureBuilder.set(CaptureRequest.CONTROL_AE_ANTIBANDING_MODE, CaptureRequest.CONTROL_AE_ANTIBANDING_MODE_OFF);
-            //captureBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, Long.valueOf(600000000));
-            captureBuilder.set(CaptureRequest.CONTROL_AE_MODE,
-                    CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+            captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
+            captureBuilder.set(CaptureRequest.CONTROL_AE_ANTIBANDING_MODE, CaptureRequest.CONTROL_AE_ANTIBANDING_MODE_OFF);
+
+            double exposureTime = mSeekBar.getProgress() * (mUpperExposureTime - mLowerExposureTime) / 100.0 + mLowerExposureTime;
+            captureBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, Long.valueOf((long)exposureTime));
+            captureBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, 1600);
+            captureBuilder.set(CaptureRequest.SENSOR_FRAME_DURATION, Long.valueOf(1000000000));
+            captureBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_OFF);
+            //captureBuilder.set(CaptureRequest.CONTROL_AE_MODE,
+            //        CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
 
             // Orientation
             //int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
@@ -780,13 +825,13 @@ public class Camera2BasicFragment extends Fragment
 
             CameraCaptureSession.CaptureCallback CaptureCallback
                     = new CameraCaptureSession.CaptureCallback() {
-
                 @Override
                 public void onCaptureCompleted(@NonNull CameraCaptureSession session,
                                                @NonNull CaptureRequest request,
                                                @NonNull TotalCaptureResult result) {
                     mCaptureResult = result;
-                    Log.d(TAG, "onCaptureCompleted" + ", imageNum: " + imageNum + " Real exposure time: " + mCaptureResult.get(CaptureResult.SENSOR_EXPOSURE_TIME));
+                    Log.d(TAG, "onCaptureCompleted" + ", imageNum: " + imageNum + " Real exposure time: " + result.get(CaptureResult.SENSOR_EXPOSURE_TIME));
+                    Log.d(TAG, "anti banding: " +result.get(CaptureResult.CONTROL_AE_ANTIBANDING_MODE));
                     ++imageNum;
                     if (imageNum >= numBurstImages) {
                         imageNum = 0;
@@ -882,8 +927,16 @@ public class Camera2BasicFragment extends Fragment
             //    Log.e(TAG, "Image Capturing failed");
             //    return;
             //}
+            Log.d(TAG, mImage.getWidth() + ", " + mImage.getHeight());
             DngCreator dngCreator = new DngCreator(mCameraCharacteristics, mCaptureResult);
             Log.d(TAG, "Background thread run to save image");
+            Image.Plane[] planes = mImage.getPlanes();
+            ByteBuffer x = planes[0].getBuffer();
+            Log.d(TAG, " " + x.isDirect());
+
+
+            Log.d(TAG, "Format: " + mImage.getFormat() + ", " + planes[0]);
+
             try {
                 FileOutputStream output = new FileOutputStream(mFile);
                 dngCreator.writeImage(output, mImage);

@@ -36,8 +36,22 @@
             android:id="@+id/picture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="bottom|center"
             android:text="@string/picture" />
+
+        <SeekBar
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/exposureTimeSeekBar"
+            android:layout_gravity="center_horizontal|top" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Exposure Time: 20660 ns"
+            android:id="@+id/exposureTimeTextView"
+            android:layout_gravity="center" />
 
     </FrameLayout>
 
